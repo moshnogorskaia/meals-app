@@ -1,13 +1,34 @@
-import { View, Text, Image, StyleSheet, ScrollView } from "react-native";
+import {
+	View,
+	Text,
+	Image,
+	StyleSheet,
+	ScrollView,
+	Button,
+} from "react-native";
 import { MEALS } from "../data/dummy-data";
 import MealDetails from "../components/MealDetails";
 import Subtitle from "../components/MealDetail/Subtitle";
 import List from "../components/MealDetail/List";
+import { useLayoutEffect } from "react";
 
-function MealDetailScreen({ route }) {
+function MealDetailScreen({ route, navigation }) {
 	const { mealId } = route.params;
 
 	const selectedMeal = MEALS.find((meal) => meal.id === mealId);
+
+	function headerButtonPressHandler() {
+		console.log("Favorite button pressed");
+	}
+
+	useLayoutEffect(() => {
+		navigation.setOptions({
+			headerRight: () => {
+				return <Button title="Tap me" onPress={headerButtonPressHandler} />;
+			},
+		});
+		// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	}, [navigation, headerButtonPressHandler]);
 
 	return (
 		<ScrollView style={styles.rootContainer}>
