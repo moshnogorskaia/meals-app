@@ -10,32 +10,41 @@ import { MEALS } from "../data/dummy-data";
 import MealDetails from "../components/MealDetails";
 import Subtitle from "../components/MealDetail/Subtitle";
 import List from "../components/MealDetail/List";
-import { useLayoutEffect } from "react";
+import { useLayoutEffect, useContext } from "react";
 import IconButton from "../components/IconButton";
+import { FavoritesContext } from "../store/context/favorites-context";
 
 function MealDetailScreen({ route, navigation }) {
+	const favoriteMealsCtx = useContext(FavoritesContext);
+
 	const { mealId } = route.params;
 
 	const selectedMeal = MEALS.find((meal) => meal.id === mealId);
 
-	function headerButtonPressHandler() {
-		console.log("Favorite button pressed");
+	const mealIsFavorite = favoriteMealsCtx.ids.includes(mealId);
+
+	function changeFavoriteStatusHandler() {
+		if (mealIsFavorite) {
+			favoriteMealsCtx.removeFavorite(mealId);
+		} else {
+			favoriteMealsCtx.addFavorite(mealId);
+		}
 	}
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerRight: () => {
 				return (
 					<IconButton
-						icon="star"
+						icon={mealIsFavorite ? "star" : "star-outline"}
 						color="white"
-						onPress={headerButtonPressHandler}
+						onPress={changeFavoriteStatusHandler}
 					/>
 				);
 			},
 		});
-		// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-	}, [navigation, headerButtonPressHandler]);
+	}, [navigation, mealIsFavorite]);
 
 	return (
 		<ScrollView style={styles.rootContainer}>
